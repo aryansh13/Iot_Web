@@ -44,11 +44,25 @@ class database
         return $row['id'];
     }
 
-    function addUserDevice($userId, $deviceName, $deviceRequirement){
-        $query = "INSERT INTO user_devices (user_id, deviceName, device_requirements) VALUES ('$userId', '$deviceName', '$deviceRequirement')";
-        mysqli_query($this->koneksi, $query);
+    function insertUserDevice($userId, $deviceName, $deviceRequirements)
+    {
+        $query = "INSERT INTO user_devices (user_id, deviceName, device_requirements1, device_requirements2, device_requirements3) VALUES ('$userId', '$deviceName', ?, ?, ?)";
+        $stmt = $this->koneksi->prepare($query);
+
+        $requirements = array_slice($deviceRequirements, 0, 3);
+        $requirements = array_pad($requirements, 3, null);
+
+        $stmt->bind_param("sss", $requirements[0], $requirements[1], $requirements[2]);
+        $stmt->execute();
     }
 
+    function getDeviceRequirementsByUserId($userId)
+    {
+        $query = "SELECT device_requirements1, device_requirements2, device_requirements3 FROM user_devices WHERE user_id = '$userId'";
+        $result = mysqli_query($this->koneksi, $query);
+        $row = mysqli_fetch_assoc($result);
+        return $row;
+    }
 }
 
 ?>

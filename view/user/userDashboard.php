@@ -1,4 +1,10 @@
-
+<?php
+    include "../../config/config.php";
+    session_start();
+    $db = new database();
+    $userId = $db->getUserIdByEmail($_SESSION['email']);
+    $deviceRequirements = $db->getDeviceRequirementsByUserId($userId);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -269,71 +275,84 @@
 
                     <!-- Content Row -->
                     <div class="row">
-
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Kelembapan </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">30%</div>
+                    <!-- Earnings (Monthly) Card Example -->
+                    <?php if (!empty($deviceRequirements) && !empty($deviceRequirements['device_requirements1'])): ?>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            <?php echo $deviceRequirements['device_requirements1']; ?>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-cloud fa-2x text-gray-300"></i>
-                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">30%</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-cloud fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <?php else: ?>
+                    <div class="col-xl-3 col-md-6 mb-4" style="display: none;">
+                        <!-- Card body akan disembunyikan jika device_requirements1 belum diisi -->
+                    </div>
+                    <?php endif; ?>
 
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Suhu</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">32°</div>
+                    <!-- Earnings (Monthly) Card Example -->
+                    <?php if (!empty($deviceRequirements) && !empty($deviceRequirements['device_requirements2'])): ?>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            <?php echo $deviceRequirements['device_requirements2']; ?>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-thermometer-half fa-2x text-gray-300"></i>
-                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">32°</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-thermometer-half fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <?php else: ?>
+                    <div class="col-xl-3 col-md-6 mb-4" style="display: none;">
+                        <!-- Card body akan disembunyikan jika device_requirements2 belum diisi -->
+                    </div>
+                    <?php endif; ?>
 
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Status
+                    <!-- Earnings (Monthly) Card Example -->
+                    <?php if (!empty($deviceRequirements) && !empty($deviceRequirements['device_requirements3'])): ?>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            <?php echo $deviceRequirements['device_requirements3']; ?>
+                                        </div>
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col-auto">
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">Normal</div>
                                             </div>
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">Normal</div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="progress progress-sm mr-2">
-                                                        <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-burn fa-2x text-gray-300"></i>
-                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-burn fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <?php else: ?>
+                    <div class="col-xl-3 col-md-6 mb-4" style="display: none;">
+                        <!-- Card body akan disembunyikan jika device_requirements3 belum diisi -->
+                    </div>
+                    <?php endif; ?>
                         <div class="col-xl-3 col-md-6 mb-4"
                         </div>
                     </div>
