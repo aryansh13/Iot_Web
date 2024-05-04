@@ -1,4 +1,8 @@
+<?php
+    include_once "../../config/config.php";
 
+    $database = new database();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,12 +47,21 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="index.html">
+            <li class="nav-item">
+                <a class="nav-link" href="adminDashboard.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
 
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Nav Item - Charts -->
+            <li class="nav-item active">
+                <a class="nav-link" href="userManagement.php">
+                <i class="fas fa-fw fa-chart-area"></i>
+                <span>User Management</span></a>
+            </li>
 
 
             <!-- Divider -->
@@ -265,7 +278,64 @@
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Perangkat Admin</h1>
+                        <h1 class="h3 mb-0 text-gray-800">User Management</h1>
+                    </div>
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Device Name</th>
+                                            <th>Device Requirement 1</th>
+                                            <th>Device Requirement 2</th>
+                                            <th>Device Requirement 3</th>
+                                            <th>Access</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php
+                                        // Query untuk mengambil data dari kedua tabel dengan join
+                                        $result = $database->koneksi->query("SELECT users.id, users.username, user_devices.deviceName, user_devices.device_requirements1, user_devices.device_requirements2, user_devices.device_requirements3, users.access FROM users INNER JOIN user_devices ON users.id = user_devices.user_id");
+
+                                        // Tampilkan data dalam baris tabel HTML
+                                        if ($result->num_rows > 0) {
+                                            while($row = $result->fetch_assoc()) {
+                                                echo "<tr>";
+                                                echo "<td>" . $row['id'] . "</td>";
+                                                echo "<td>" . $row['username'] . "</td>";
+                                                echo "<td>" . $row['deviceName'] . "</td>";
+                                                echo "<td>" . $row['device_requirements1'] . "</td>";
+                                                echo "<td>" . $row['device_requirements2'] . "</td>";
+                                                echo "<td>" . $row['device_requirements3'] . "</td>";
+                                                echo "<td>" . ($row['access'] ? "Memiliki" : "Tidak Memiliki") . "</td>";
+                                                // Kolom aksi
+                                                echo "<td>";
+                                                echo "<a href='change_access.php?user_id=" . $row['id'] . "&access=" . ($row['access'] ? "0" : "1") . "'>";
+                                                echo ($row['access'] ? "Ubah ke Tidak Memiliki" : "Ubah ke Memiliki");
+                                                echo "</a>";
+                                                echo "</td>";
+                                                echo "</tr>";
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='7'>Tidak ada data</td></tr>";
+                                        }
+
+                                        // Tutup koneksi database
+                                        $database->koneksi->close();
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- /.container-fluid -->
