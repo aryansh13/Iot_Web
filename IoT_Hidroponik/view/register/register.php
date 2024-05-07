@@ -1,9 +1,5 @@
 <?php
-include "../../config/config.php";
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $db = new database();
-
     // Mendapatkan data dari form
     $username = $_POST['username'];
     $email = $_POST['email'];
@@ -11,22 +7,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $deviceName = $_POST['deviceName'];
     $deviceRequirements = array_filter($_POST['deviceRequirement'] ?? []);
 
-    // Menambahkan user baru ke dalam tabel users
-    $db->registerUser($username, $email, $password);
+    // Data yang akan dikirim ke API
+    $postData = array(
+        'username' => $username,
+        'email' => $email,
+        'password' => $password,
+        'deviceName' => $deviceName,
+        'device_requirements1' => isset($deviceRequirements[0]) ? $deviceRequirements[0] : '',
+        'device_requirements2' => isset($deviceRequirements[1]) ? $deviceRequirements[1] : '',
+        'device_requirements3' => isset($deviceRequirements[2]) ? $deviceRequirements[2] : ''
+    );
 
-    // Mendapatkan ID user yang baru saja ditambahkan
-    $userId = $db->getUserIdByEmail($email);
+    // Setup cURL
+    $ch = curl_init('http://localhost:8080/register');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
 
-    // Menyimpan data device name dan device requirements ke tabel user_devices
-    if (!empty($deviceName) && !empty($deviceRequirements)) {
-        $db->insertUserDevice($userId, $deviceName, $deviceRequirements);
+    // Eksekusi cURL request
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    // Cek jika request berhasil
+    if ($httpCode == 200) {
+        // Registrasi berhasil, redirect ke halaman login
+        header('Location: ../login/login.php');
+        exit();
+    } else {
+        // Registrasi gagal, tampilkan pesan error
+        echo "Registrasi gagal: " . $response;
     }
 
-    // Redirect ke halaman login setelah registrasi berhasil
-    header('Location: ../login/login.php');
-    exit();
+    // Tutup cURL
+    curl_close($ch);
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

@@ -41,7 +41,7 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                     </div>
-                                    <?php if (isset($error)) echo "<p style='color: red;'>$error</p>" ?>
+                                    
                                     <form class="user" action="validasi_login.php" method="POST">
                                         <div class="form-group" for="email">
                                             <input type="email" name="email" class="form-control form-control-user"
