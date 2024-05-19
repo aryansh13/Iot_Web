@@ -238,7 +238,7 @@ if ($response) {
                                 <!-- Nav Item - User Information -->
                                 <li class="nav-item dropdown no-arrow">
                                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="mr-2 d-none d-lg-inline text-gray-600 small">User</span>
+                                        <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $_SESSION['username'] ?></span>
                                         <img class="img-profile rounded-circle" src="../../img/undraw_profile.svg">
                                     </a>
                                     <!-- Dropdown - User Information -->
@@ -304,13 +304,16 @@ if ($response) {
                                                     <div class="card-body">
                                                         <div class="row no-gutters align-items-center">
                                                             <div class="col mr-2">
-                                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                                    <?php echo ucfirst(str_replace('_', ' ', $key)); ?>
+                                                                <span class="text-xs font-weight-bold text-second text-uppercase" style="font-size: 10px;"><?php echo ucfirst(str_replace('_', ' ', $key)); ?></span>
+                                                                <div class="text-xl font-weight-bold text-primary text-uppercase mb-1 medium-text" style="font-size: 20px;">
+                                                                    <?php echo key($value); ?> <!-- Menampilkan nama requirement -->
                                                                 </div>
-                                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $value; ?></div>
+                                                                <div class="h5 mb-0 font-weight-bold text-gray-800" style="font-size: large;">
+                                                                    <?php echo reset($value); ?> <!-- Menampilkan nilai persentase dari requirement -->
+                                                                </div>
                                                             </div>
                                                             <div class="col-auto">
-                                                                <i class="fas fa-cloud fa-2x text-gray-300"></i>
+                                                                <i class="fas fa-cloud fa-2x text-gray-300"></i> <!-- Ini adalah contoh ikon, bisa disesuaikan -->
                                                             </div>
                                                         </div>
                                                     </div>
@@ -327,6 +330,7 @@ if ($response) {
                                     echo "<div class='col'>No devices found.</div>";
                                 }
                                 ?>
+
                             </div>
 
                             <!-- /.container-fluid -->

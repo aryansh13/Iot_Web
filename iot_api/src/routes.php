@@ -162,33 +162,49 @@ return function (App $app) {
         }
     });
 
-    // Mengambil data user_device berdasarkan user_id
     $app->get("/user_device/{user_id}", function (Request $request, Response $response, $args) {
         $user_id = $args['user_id'];
-
+    
         // Query untuk mengambil data user beserta perangkatnya
-        $sql = "SELECT ud.device_requirements1, ud.device_requirements2, ud.device_requirements3
-            FROM user_devices ud
-            WHERE ud.user_id = :user_id";
-
+        $sql = "SELECT device_requirements1, device_requirements2, device_requirements3
+                FROM user_devices
+                WHERE user_id = :user_id";
+    
         // Prepare statement
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':user_id', $user_id);
-
+    
         // Execute statement
         $stmt->execute();
-
+    
         // Fetch data
-        $result = $stmt->fetchAll();
-
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
         if ($result !== false && count($result) > 0) {
-            // Jika data ditemukan, kirimkan sebagai respons JSON
-            return $response->withJson(["status" => "success", "data" => $result], 200);
+            // Return combined data as JSON response
+            $combinedData = [];
+            foreach ($result as $row) {
+                $combinedRow = [];
+                if (!empty($row['device_requirements1'])) {
+                    $combinedRow["device_requirements1"] = [$row['device_requirements1'] => '25°C']; //suhu
+                }
+                if (!empty($row['device_requirements2'])) {
+                    $combinedRow["device_requirements2"] = [$row['device_requirements2'] => '60%']; //kelembapan
+                }
+                if (!empty($row['device_requirements3'])) {
+                    $combinedRow["device_requirements3"] = [$row['device_requirements3'] => '6.5']; //ph level
+                }
+                $combinedData[] = $combinedRow;
+            }
+    
+            return $response->withJson(["status" => "success", "data" => $combinedData], 200);
         } else {
             // Jika data tidak ditemukan, kirimkan pesan error
             return $response->withJson(["status" => "error", "message" => "User not found"], 404);
         }
     });
+    
+    
 
     // Route untuk melakukan proses register.
     $app->post("/register", function (Request $request, Response $response) {

@@ -55,6 +55,9 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
         // Simpan user_id ke dalam sesi
         session_start();
         $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['loggedin'] = true;
+        $_SESSION['role'] = $user['role'];
 
         // Redirect ke halaman dashboard
         if ($user['role'] === 0) { // Role admin
