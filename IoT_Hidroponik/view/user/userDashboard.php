@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Lakukan permintaan HTTP ke endpoint API
-$api_url = "http://localhost:8080/user_device/{$user_id}";
+$api_url = "http://localhost:3000/user_device/{$user_id}";
 $response = file_get_contents($api_url); // Melakukan permintaan HTTP GET
 
 // Cek jika respons berhasil diterima

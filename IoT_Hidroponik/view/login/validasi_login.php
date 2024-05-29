@@ -43,7 +43,7 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
     ];
 
     // Kirim permintaan POST ke API
-    $response = sendPostRequest('http://localhost:8080/login', $data);
+    $response = sendPostRequest('http://localhost:3000/login', $data);
 
     // Menangani respon dari API
     $result = json_decode($response, true);

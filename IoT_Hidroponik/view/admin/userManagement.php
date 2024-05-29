@@ -298,7 +298,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                                     <tbody>
                                         <?php
                                         // URL API yang akan diakses
-                                        $apiUrl = 'http://localhost:8080/users/';
+                                        $apiUrl = 'http://localhost:3000/users/';
 
                                         // Inisialisasi cURL
                                         $curl = curl_init();

@@ -1,14 +1,21 @@
 <?php
+// Periksa jika request method adalah POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Mendapatkan data dari form
     $username = $_POST['username'];
     $email = $_POST['email'];
-    $password = $_POST['password']; // Menggunakan password_hash untuk menyimpan password yang di-hash
+    $password = $_POST['password']; // Gunakan password_hash untuk menyimpan password yang di-hash
     $deviceName = $_POST['deviceName'];
-    $deviceRequirements = array_filter($_POST['deviceRequirement'] ?? []);
+    $deviceRequirements = $_POST['deviceRequirement'] ?? [];
 
-    // Data yang akan dikirim ke API
-    $postData = array(
+    // Memastikan semua kolom diisi
+    if (empty($username) || empty($email) || empty($password) || empty($deviceName) || count($deviceRequirements) < 3) {
+        echo "Semua kolom harus diisi";
+        exit();
+    }
+
+    // Data yang akan dikirim ke API dalam format JSON
+    $data = array(
         'username' => $username,
         'email' => $email,
         'password' => $password,
@@ -18,30 +25,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'device_requirements3' => isset($deviceRequirements[2]) ? $deviceRequirements[2] : ''
     );
 
-    // Setup cURL
-    $ch = curl_init('http://localhost:8080/register');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+    // Mengonversi array data ke dalam format JSON
+    $jsonData = json_encode($data);
 
-    // Eksekusi cURL request
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    // Setup HTTP header
+    $header = array(
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($jsonData)
+    );
 
-    // Cek jika request berhasil
-    if ($httpCode == 200) {
+    // Setup options untuk request
+    $options = array(
+        'http' => array(
+            'method' => 'POST',
+            'header' => implode("\r\n", $header),
+            'content' => $jsonData
+        )
+    );
+
+    // Buat context untuk request
+    $context = stream_context_create($options);
+
+    // Kirim request ke endpoint API
+    $result = file_get_contents('http://localhost:3000/register', false, $context);
+
+    // Decode response JSON
+    $responseData = json_decode($result, true);
+
+    // Cek status response
+    if ($responseData['status'] === 'success') {
         // Registrasi berhasil, redirect ke halaman login
         header('Location: ../login/login.php');
         exit();
     } else {
         // Registrasi gagal, tampilkan pesan error
-        echo "Registrasi gagal: " . $response;
+        echo "Registrasi gagal: " . $responseData['message'];
     }
-
-    // Tutup cURL
-    curl_close($ch);
 }
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -132,32 +155,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script>
     const addMoreBtn = document.getElementById('addMoreBtn');
     const deviceRequirementsContainer = document.getElementById('deviceRequirementsContainer');
+    let count = 1;
 
     addMoreBtn.addEventListener('click', function() {
-    const newInputGroup = document.createElement('div');
-    newInputGroup.className = 'input-group mt-3';
+        const newInputGroup = document.createElement('div');
+        newInputGroup.className = 'input-group mt-3';
 
-    const newInput = document.createElement('input');
-    newInput.type = 'text';
-    newInput.className = 'form-control form-control-user';
-    newInput.placeholder = 'Device Requirement';
-    newInput.name = 'deviceRequirement[]';
+        const newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.className = 'form-control form-control-user';
+        newInput.placeholder = 'Device Requirement';
+        newInput.name = 'deviceRequirement[]'; // Diberi nama seperti ini agar menjadi array di PHP
 
-    const removeBtn = document.createElement('div');
-    removeBtn.className = 'input-group-append';
-    removeBtn.innerHTML = '<button class="btn btn-danger remove-btn p-15" type="button">Remove</button>';
+        const removeBtn = document.createElement('div');
+        removeBtn.className = 'input-group-append';
+        removeBtn.innerHTML = '<button class="btn btn-danger remove-btn p-15" type="button">Remove</button>';
 
-    newInputGroup.appendChild(newInput);
-    newInputGroup.appendChild(removeBtn);
-    deviceRequirementsContainer.appendChild(newInputGroup);
-});
+        newInputGroup.appendChild(newInput);
+        newInputGroup.appendChild(removeBtn);
+        deviceRequirementsContainer.appendChild(newInputGroup);
 
-deviceRequirementsContainer.addEventListener('click', function(e) {
-    if (e.target.classList.contains('remove-btn')) {
-        e.target.parentElement.parentElement.remove();
-    }
-});
+        count++;
+        if (count > 3) {
+            addMoreBtn.style.display = 'none'; // Sembunyikan tombol jika sudah mencapai batas
+        }
+    });
+
+    deviceRequirementsContainer.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-btn')) {
+            e.target.parentElement.parentElement.remove();
+            count--;
+            addMoreBtn.style.display = 'block'; // Tampilkan tombol kembali jika dihapus
+        }
+    });
 </script>
+
 
 </body>
 
